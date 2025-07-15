@@ -25,6 +25,7 @@ nb-configuration.xml
 .settings/
 .classpath
 .idea/
+.project
 
 # System Files
 .DS_Store
