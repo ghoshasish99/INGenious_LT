@@ -356,12 +356,7 @@
         </dependency>
         
         
-        <dependency>
-            <groupId>io.appium</groupId>
-            <artifactId>java-client</artifactId>
-            <version>${appium.version}</version>
-            <type>jar</type>
-        </dependency>
+        
         <dependency>
             <groupId>com.galenframework</groupId>
             <artifactId>galen-core</artifactId>
@@ -399,6 +394,13 @@
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.allclient</artifactId>
             <version>${ibmmq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>${appium.version}</version>
+            <type>jar</type>
         </dependency>
     
 		

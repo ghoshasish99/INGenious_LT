@@ -402,20 +402,21 @@ public class TestCaseComponent extends JPanel implements ActionListener {
     }
 
     public void record() throws IOException {
+        PlaywrightSpinner playwrightSpinnerGUI = new PlaywrightSpinner();
         CompletableFuture<Void> launchPlaywright = CompletableFuture.runAsync(() -> {
             try {
-                launchPlaywright();
+                launchPlaywright(playwrightSpinnerGUI);
             } catch (IOException ex) {
                 Logger.getLogger(TestCaseComponent.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         CompletableFuture<Void> playwrightLoading = CompletableFuture.runAsync(() -> {
-            playwrightLoading();
+            playwrightLoading(playwrightSpinnerGUI);
         });
         CompletableFuture<Void> playwright = CompletableFuture.allOf(launchPlaywright, playwrightLoading);
     }
 
-    public Process startPlaywrightProcess(String processName){
+    public Process startPlaywrightProcess(String processName, PlaywrightSpinner playwrightSpinnerGUI){
         try{
             String[] command = new String[0];
             String osName = System.getProperty("os.name").toLowerCase();
@@ -430,12 +431,13 @@ public class TestCaseComponent extends JPanel implements ActionListener {
             return process;
        }catch (Exception ex){
          System.out.println(ex.getMessage());
+         playwrightSpinnerGUI.appendLog(ex.getMessage());
        }
 
         return null;
     }
     
-     public void initialization(){
+     public void initialization(PlaywrightSpinner playwrightSpinnerGUI){
         try{
             String[] command = new String[0];
             String osName = System.getProperty("os.name").toLowerCase();
@@ -450,52 +452,59 @@ public class TestCaseComponent extends JPanel implements ActionListener {
            Runtime.getRuntime().exec(command);
        }catch (Exception ex){
          System.out.println(ex.getMessage());
+         playwrightSpinnerGUI.appendLog(ex.getMessage());
        }
     }
 
-    public void launchPlaywright() throws IOException {
+    public void launchPlaywright(PlaywrightSpinner playwrightSpinnerGUI) throws IOException {
         System.out.println("============================== Playwright Log Started ==============================");
-        initialization();
-        Process launchRecorder = startPlaywrightProcess("codegen");
+        playwrightSpinnerGUI.appendLog("============================== Playwright Log Started ==============================");
+        initialization(playwrightSpinnerGUI);
+        Process launchRecorder = startPlaywrightProcess("codegen", playwrightSpinnerGUI);
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(launchRecorder.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(launchRecorder.getErrorStream()));
         String s = null;
         while ((s = stdInput.readLine()) != null) {
             System.out.println(s);
+            playwrightSpinnerGUI.appendLog(s);
         }
         while ((s = stdError.readLine()) != null) {
             System.out.println(s);
             if (s.contains("mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args=\"install\"")) {
                 System.out.println("");
                 System.out.println("--> mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args=\"install\" --> Got executed");
-                Process playwrightInstall = startPlaywrightProcess("install");
+                playwrightSpinnerGUI.appendLog("--> mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args=\"install\" --> Got executed");
+                Process playwrightInstall = startPlaywrightProcess("install", playwrightSpinnerGUI);
                 BufferedReader stdInput1 = new BufferedReader(new InputStreamReader(playwrightInstall.getInputStream()));
                 BufferedReader stdError1 = new BufferedReader(new InputStreamReader(playwrightInstall.getErrorStream()));
                 String s1 = null;
                 while ((s1 = stdInput1.readLine()) != null) {
                     System.out.println(s1);
+                    playwrightSpinnerGUI.appendLog(s1);
                 }
                 while ((s1 = stdError1.readLine()) != null) {
                     System.out.println(s1);
+                    playwrightSpinnerGUI.appendLog(s1);
                 }
                 try {
                     playwrightInstall.waitFor();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(TestCaseComponent.class.getName()).log(Level.SEVERE, null, ex);
+                    playwrightSpinnerGUI.appendLog(ex.getMessage());
                 }
-                startPlaywrightProcess("codegen");
+                startPlaywrightProcess("codegen", playwrightSpinnerGUI);
                 break;
             }
         }
         System.out.println("============================== Playwright Log Ended ==============================");
+        playwrightSpinnerGUI.appendLog("============================== Playwright Log Ended ==============================");
 
     }
 
-    public void playwrightLoading() {
+    public void playwrightLoading(PlaywrightSpinner playwrightSpinnerGUI) {
 
-        PlaywrightSpinner a = new PlaywrightSpinner();
-        a.setAlwaysOnTop(true);
-        a.setVisible(true);
+        playwrightSpinnerGUI.setAlwaysOnTop(true);
+        playwrightSpinnerGUI.setVisible(true);
 
     }
 
