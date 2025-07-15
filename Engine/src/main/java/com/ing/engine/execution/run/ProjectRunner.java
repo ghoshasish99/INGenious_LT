@@ -209,14 +209,16 @@ public class ProjectRunner implements TestRunner {
                         String browser = capitalizeFirstLetter(args[1]);
                         String capability = args[2];
                         getProject().getProjectSettings().getCapabilities().getCapabiltiesFor(browser).update(capability,value);
-                    }else if (key.startsWith("db.alias@")) {
+                    }else if (key.startsWith("db.")) {
                         String args[] = key.split("\\.");
-                     //   String db = args[1];
-                     //   getProject().getProjectSettings().getDatabaseSettings().getDBPropertiesFor(db).update(db, value);
-                    } else if (key.startsWith("context.alias@")) {
+                        String db = args[1];
+                        String property = args[2];
+                        getProject().getProjectSettings().getDatabaseSettings().getDBPropertiesFor(db).put(property, value);
+                    } else if (key.startsWith("context.")) {
                         String args[] = key.split("\\.");
-                     //   String context = args[1];
-                     //   getProject().getProjectSettings().getContextSettings().getContextOptionsFor(context).update(context,value);
+                        String context = args[1];
+                        String property = args[2];
+                        getProject().getProjectSettings().getContextSettings().getContextOptionsFor(context).put(property, value);
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(ProjectRunner.class.getName()).log(Level.SEVERE, null, ex);
