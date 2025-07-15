@@ -37,6 +37,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
@@ -792,12 +794,53 @@ public class Webservice extends General {
             Logger.getLogger(this.getClass().getName()).log(Level.OFF, ex.getMessage(), ex);
         }
     }
+    
+    private boolean isMultiPart() {
+        if (headers.containsKey(key)) {
+            ArrayList<String> headerlist = headers.get(key);
+            if (headerlist.size() > 0) {
+                for (String header : headerlist) {
+                    if (header.split("=")[1].contains("multipart")) {
+                        return true;
+                    }
+                };
+            }
+        }
+        return false;
+    }
 
-    private void setRequestMethod(String method, String payload) {
+
+    private void setRequestMethod(String method, String payload) throws IOException {
+        BodyPublisher payloadBody = null;
         if (isformUrlencoded()) {
             payload = urlencodedParams();
         }
-        BodyPublisher payloadBody = HttpRequest.BodyPublishers.ofString(payload);
+        if (isMultiPart()) {
+            Path filePath = Path.of(getVar("%filePath%"));
+            filePath = Path.of(Control.getCurrentProject().getLocation() + "/" + filePath);
+            String mimeType = Files.probeContentType(filePath);
+            System.out.println("Path of the file === " + filePath);
+            String boundary = "Boundary-" + System.currentTimeMillis();
+            String fileName = filePath.getFileName().toString();
+
+            /* String body = "--" + boundary.getBytes(StandardCharsets.UTF_8)+ "\r\n"
+                    + "Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n"
+                    + "Content-Type: " + mimeType // Set Content-Type to text/csv
+                    + Files.readString(filePath, StandardCharsets.UTF_8) + "\r\n"
+                    + ("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8);*/
+            
+            var byteArrays = new ArrayList<byte[]>();
+            byteArrays.add(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+            byteArrays.add(("Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n").getBytes(StandardCharsets.UTF_8));
+            byteArrays.add(("Content-Type: " + mimeType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+            byteArrays.add(Files.readAllBytes(filePath));
+            byteArrays.add(("\r\n--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
+
+            payloadBody = HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
+            httpRequestBuilder.put(key, httpRequestBuilder.get(key).setHeader("Content-Type", "multipart/form-data; boundary=" + boundary));
+        } else {
+            payloadBody = HttpRequest.BodyPublishers.ofString(payload);
+        }
         try {
             switch (method) {
                 case "POST": {
@@ -837,7 +880,7 @@ public class Webservice extends General {
         }
     }
 
-    private void setRequestMethod(RequestMethod requestmethod) throws FileNotFoundException {
+    private void setRequestMethod(RequestMethod requestmethod) throws FileNotFoundException, IOException {
         if (requestmethod.toString().equals("PUT") || requestmethod.toString().equals("POST") || requestmethod.toString().equals("PATCH") || requestmethod.toString().equals("DELETEWITHPAYLOAD")) {
 
             setRequestMethod(requestmethod.toString(), handlePayloadorEndpoint(Data));
@@ -970,7 +1013,7 @@ public class Webservice extends General {
             Logger.getLogger(this.getClass().getName()).log(Level.OFF, ex.getMessage(), ex);
         }
     }
-    
+
     private Boolean isSSLCertificateVerification() {
         return Control.getCurrentProject().getProjectSettings().getDriverSettings().sslCertificateVerification();
     }
