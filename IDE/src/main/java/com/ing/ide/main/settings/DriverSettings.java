@@ -43,6 +43,7 @@ public class DriverSettings extends javax.swing.JFrame {
     private final AppMainFrame sMainFrame;
     Project sProject;
     ProjectSettings settings;
+    private SaveSettingsListeners saveSettingsListeners;
 
     /**
      * Creates new form NewJFrame
@@ -88,6 +89,7 @@ public class DriverSettings extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 addNewEmulator();
+                saveSettings.setEnabled(true);
             }
         });
     }
@@ -97,6 +99,7 @@ public class DriverSettings extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 addNewDB();
+                saveSettings.setEnabled(true);
             }
         });
     }
@@ -106,6 +109,7 @@ public class DriverSettings extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 addNewContext();
+                saveSettings.setEnabled(true);
             }
         });
     }
@@ -558,6 +562,9 @@ public class DriverSettings extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Configurations");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -1051,10 +1058,12 @@ public class DriverSettings extends javax.swing.JFrame {
 
     private void saveSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSettingsActionPerformed
         saveSettings();
+        saveSettings.setEnabled(false);
     }//GEN-LAST:event_saveSettingsActionPerformed
 
     private void resetSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetSettingsActionPerformed
         // TODO add your handling code here:
+        saveSettings.setEnabled(false);
     }//GEN-LAST:event_resetSettingsActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -1106,6 +1115,12 @@ public class DriverSettings extends javax.swing.JFrame {
             });
         }
     }//GEN-LAST:event_dbComboItemStateChanged
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // TODO add your handling code here:
+        saveSettings.setEnabled(false);
+        addListeners();
+    }//GEN-LAST:event_formWindowActivated
 
     private void addNewDB() {
         String newdbName = dbCombo.getEditor().getItem().toString();
@@ -1182,7 +1197,22 @@ public class DriverSettings extends javax.swing.JFrame {
 
 
     }
-
+    
+    private void addListeners(){
+        // Add SaveSettings listeners
+        saveSettingsListeners = new SaveSettingsListeners(saveSettings);
+        
+        driverPropTable.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        appiumConnectionString.getDocument().addDocumentListener(saveSettingsListeners.new SaveDocListener());
+        appiumEmulator.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        capTable.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        dbCombo.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        dbPropTable.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        contextCombo.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        contextPropTable.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        // End of SaveSettings Listeners
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addCap;
     private javax.swing.JButton addPropButton;

@@ -73,6 +73,8 @@ public class INGeniousSettings extends javax.swing.JFrame {
 
     private ConnectButton dbConnect;
     
+    private SaveSettingsListeners saveSettingsListeners;
+    
     public INGeniousSettings(AppMainFrame sMainFrame) {
         this.sMainFrame = sMainFrame;
         initComponents();
@@ -501,6 +503,9 @@ public class INGeniousSettings extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Run Settings");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -920,11 +925,13 @@ public class INGeniousSettings extends javax.swing.JFrame {
 
     private void resetSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetSettingsActionPerformed
         loadAll();
+        saveSettings.setEnabled(false);
         Notification.show("Old Values Loaded");
     }//GEN-LAST:event_resetSettingsActionPerformed
 
     private void saveSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSettingsActionPerformed
         saveAll();
+        saveSettings.setEnabled(false);
         Notification.show("Settings Saved");
     }//GEN-LAST:event_saveSettingsActionPerformed
 
@@ -995,6 +1002,12 @@ public class INGeniousSettings extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_enableHARActionPerformed
 
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // TODO add your handling code here:
+        saveSettings.setEnabled(false);
+        addListeners();
+    }//GEN-LAST:event_formWindowActivated
+
     private void testConnection(final Sync connection) {
         try {
             if (connection != null) {
@@ -1014,6 +1027,38 @@ public class INGeniousSettings extends javax.swing.JFrame {
         testConn.setIcon(FAIL_ICON);
     }
 
+    private void addListeners(){
+        // Add SaveSettings listeners
+        saveSettingsListeners = new SaveSettingsListeners(saveSettings);
+        
+        executionTimeOut.getDocument().addDocumentListener(saveSettingsListeners.new SaveDocListener());
+        remoteGridURL.getDocument().addDocumentListener(saveSettingsListeners.new SaveDocListener());
+        jRadioButton1.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        jRadioButton2.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        jRadioButton3.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        jRadioButton4.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        passCheckBox.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        failCheckBox.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        fullpagescreenshot.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        threadCount.addChangeListener(saveSettingsListeners.new  SaveChangeListener());
+        reRunNo.addChangeListener(saveSettingsListeners.new  SaveChangeListener());
+        reportPerformanceLog.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        testEnv.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        bddReport.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        slackNotify.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        rpUpdate.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        extent.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        azure.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        recordVideo.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        enableTracing.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        enableHAR.addItemListener(saveSettingsListeners.new  SaveItemListener());  
+        tsTMTable.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        updateresultscheckbox.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        testMgmtModuleCombo.addItemListener(saveSettingsListeners.new  SaveItemListener());
+        uDPanel.table.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        extentSettingsPanel.table.getModel().addTableModelListener(saveSettingsListeners.new  SaveTableModelListener());
+        // End of SaveSettings Listeners
+    }   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox azure;
