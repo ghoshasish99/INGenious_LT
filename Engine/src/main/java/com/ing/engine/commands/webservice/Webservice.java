@@ -23,6 +23,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import com.jayway.jsonpath.*;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
@@ -48,8 +50,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -794,7 +799,7 @@ public class Webservice extends General {
             Logger.getLogger(this.getClass().getName()).log(Level.OFF, ex.getMessage(), ex);
         }
     }
-    
+
     private boolean isMultiPart() {
         if (headers.containsKey(key)) {
             ArrayList<String> headerlist = headers.get(key);
@@ -808,7 +813,6 @@ public class Webservice extends General {
         }
         return false;
     }
-
 
     private void setRequestMethod(String method, String payload) throws IOException {
         BodyPublisher payloadBody = null;
@@ -828,7 +832,6 @@ public class Webservice extends General {
                     + "Content-Type: " + mimeType // Set Content-Type to text/csv
                     + Files.readString(filePath, StandardCharsets.UTF_8) + "\r\n"
                     + ("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8);*/
-            
             var byteArrays = new ArrayList<byte[]>();
             byteArrays.add(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
             byteArrays.add(("Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n").getBytes(StandardCharsets.UTF_8));
@@ -1002,12 +1005,34 @@ public class Webservice extends General {
         }
     }};
 
+    private KeyManager[] loadKeyStore() {
+        String keystorePath = Control.getCurrentProject().getProjectSettings().getDriverSettings().getProperty("keyStorePath");
+        String keystorePassword = Control.getCurrentProject().getProjectSettings().getDriverSettings().getProperty("keyStorePassword");
+        KeyStore keyStore;
+        KeyManagerFactory kmf = null;
+        try {
+            keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(new FileInputStream(keystorePath), keystorePassword.toCharArray());
+            kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(keyStore, keystorePassword.toCharArray());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(keyStore);
+        } catch (Exception ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.OFF, ex.getMessage(), ex);
+        }
+        return kmf.getKeyManagers();
+    }
+
     private void sslCertificateVerification() {
         try {
             if (!isSSLCertificateVerification()) {
                 SSLContext sc = SSLContext.getInstance("TLS");
-                sc.init(null, trustAllCerts, new SecureRandom());
-                httpClientBuilder.put(key, httpClientBuilder.get(key).sslContext(sc));
+                if (isSelfSigned()) {
+                    sc.init(loadKeyStore(), trustAllCerts, new SecureRandom());
+                } else {
+                    sc.init(null, trustAllCerts, new SecureRandom());
+                }
+                httpClientBuilder.put(key, httpClientBuilder.get(key)).sslContext(sc);
             }
         } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.OFF, ex.getMessage(), ex);
@@ -1016,6 +1041,10 @@ public class Webservice extends General {
 
     private Boolean isSSLCertificateVerification() {
         return Control.getCurrentProject().getProjectSettings().getDriverSettings().sslCertificateVerification();
+    }
+
+    private Boolean isSelfSigned() {
+        return Control.getCurrentProject().getProjectSettings().getDriverSettings().selfSigned();
     }
 
 }
