@@ -1,5 +1,5 @@
 <Root type="MOR" ref="Mobile">
-  <Page packageName="com.swaglabsmobileapp" ref="swaglabsmobileapp">
+  <Page packageName="" ref="swaglabsmobileapp">
     <ObjectGroup ref="Username">
       <Object ref="Username">
         <Property value="" ref="UiAutomator" pref="1"/>
@@ -112,8 +112,8 @@
         <Property value="" ref="class" pref="10"/>
       </Object>
     </ObjectGroup>
-    <ObjectGroup ref="Zip/Postal Code">
-      <Object ref="Zip/Postal Code">
+    <ObjectGroup ref="ZipPostal Code">
+      <Object ref="ZipPostal Code">
         <Property value="" ref="UiAutomator" pref="1"/>
         <Property value="" ref="UiAutomation" pref="2"/>
         <Property value="" ref="id" pref="3"/>
