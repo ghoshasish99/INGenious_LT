@@ -228,10 +228,14 @@ public class Command {
         return Commander.getUserDefinedData(key);
     }
 
+    public String getDatasheet(String key){
+        return Commander.getDatasheet(key);
+    }
+    
     public Properties getDataBaseData(String val) {
         return Commander.getDataBaseProperty(val);
     }
-
+    
     public File getDBFile(String val) {
         return new File(Commander.getDBFile(val));
     }

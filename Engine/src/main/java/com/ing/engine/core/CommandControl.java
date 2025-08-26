@@ -24,6 +24,8 @@ import java.util.Stack;
 import com.ing.engine.drivers.WebDriverCreation;
 import com.ing.engine.drivers.MobileObject;
 import com.ing.engine.drivers.MobileObject.FindmType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.openqa.selenium.WebElement;
 
@@ -206,7 +208,7 @@ public abstract class CommandControl {
         System.out.println("Getting runTimeVar " + key);
         String val = getDynamicValue(key);
         if (val == null) {
-            System.err.println("runTimeVars does not contain " + key + ".Returning Empty");
+            System.err.println("runTimeVars does not contain " + key + ". Returning Empty");
             Report.updateTestLog("Get Var", "Getting From runTimeVars " + key + " Failed", Status.WARNING);
             return "";
         } else {
@@ -221,6 +223,39 @@ public abstract class CommandControl {
             return getUserDefinedData(key);
         }
         return runTimeVars.get(key);
+    }
+    
+    public String getDatasheet(String key) {
+
+        System.out.println("Getting Datasheet " + key);
+        String val = getDataSheetValue(key);
+        if (val == null) {
+            System.err.println("Datasheet does not contain " + key + ". Returning Empty");
+            Report.updateTestLog("Get Datasheet", "Getting From Datasheet " + key + " Failed", Status.WARNING);
+            return "";
+        } else {
+            return val;
+        }
+    }
+    
+    public String getDataSheetValue(String key){
+        String val = null;
+        key = key.matches("\\{(\\S)+\\}") ? key.substring(1, key.length() - 1) : key;
+        List<String> sheetlist = Control.getCurrentProject().getTestData().getTestDataFor(Control.exe.runEnv())
+                .getTestDataNames();
+        for (int sheet = 0; sheet < sheetlist.size(); sheet++) {
+            if (key.contains(sheetlist.get(sheet) + ":")) {
+                com.ing.datalib.testdata.model.TestDataModel tdModel = Control.getCurrentProject()
+                        .getTestData().getTestDataByName(sheetlist.get(sheet));
+                List<String> columns = tdModel.getColumns();
+                for (int col = 0; col < columns.size(); col++) {
+                    if (key.contains(sheetlist.get(sheet) + ":" + columns.get(col))) {
+                    	val = userData.getData(sheetlist.get(sheet), columns.get(col));
+                    }
+                }
+            }
+        }
+        return val;
     }
 
     public String getUserDefinedData(String key) {
@@ -261,5 +296,45 @@ public abstract class CommandControl {
         systemSettings.put("http.proxyUser", settings.getProperty("proxyUser"));
         systemSettings.put("http.proxyPassword", settings.getProperty("proxyPassword"));
         return systemSettings;
+    }
+    
+    public static List<String> smartCommaSplitter(String strInput){
+        List<String> result = new ArrayList();
+        StringBuilder currentStr = new StringBuilder();
+        
+        boolean inQuotes = false;
+        boolean inBraces = false;
+        boolean inPercent = false;
+        
+        for(int i = 0; i < strInput.length(); i++){
+            char c = strInput.charAt(i);
+            
+            if(c == '%' && !inQuotes && !inBraces){
+                inPercent = !inPercent;
+            }
+            
+            if(c == '"' && !inPercent && !inBraces){
+                inQuotes = !inQuotes;
+            }
+            
+            if(c == '{' && !inQuotes && !inPercent){
+                inBraces = true;
+            } else if(c == '}' && !inQuotes && !inPercent){
+                inBraces = false;
+            }
+            
+            if(c == ',' && !inQuotes && !inPercent&& !inBraces){
+                result.add(currentStr.toString());
+                currentStr.setLength(0);
+            } else {
+                currentStr.append(c);
+            }
+        }
+        
+        if (currentStr.length() > 0) {
+            result.add(currentStr.toString());
+        }
+        
+        return result;
     }
 }
