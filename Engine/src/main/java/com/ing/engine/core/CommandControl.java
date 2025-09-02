@@ -25,8 +25,12 @@ import com.ing.engine.drivers.WebDriverCreation;
 import com.ing.engine.drivers.MobileObject;
 import com.ing.engine.drivers.MobileObject.FindmType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.openqa.selenium.WebElement;
 
 public abstract class CommandControl {
@@ -336,5 +340,62 @@ public abstract class CommandControl {
         }
         
         return result;
+    }
+    
+    
+    /**
+     * Detects all runtime variable keys marked with percent signs (%) in the input string
+     * and returns them as a set.
+     *
+     * <p>Runtime variable keys are identified by surrounding percent signs (e.g., %KEY%).</p>
+     *
+     * @param str the input string to be evaluated
+     * @return a set containing all detected runtime variable keys, including the percent signs
+     */
+    public static HashSet<String> getAllRuntimeNameVars(String str){
+        System.out.println("Extracting all runtime variable names from " + str);
+        Pattern pattern = Pattern.compile("%(\\S+?)%");
+        Matcher matcher = pattern.matcher(str);
+        HashSet<String> runtimeVars = new HashSet<>();
+         
+        int searchStart = 0;
+
+        while (searchStart < str.length()) {
+            matcher.region(searchStart, str.length());
+            if (matcher.find()) {
+                int startIndex = matcher.start();
+                int endIndex = matcher.end();
+                
+                // Move searchStart past the current match
+                searchStart = matcher.end();
+                runtimeVars.add(str.substring(startIndex, endIndex));
+            } else {
+                break;
+            }
+        }
+        
+        System.out.println("List of extracted runtime variables :" + runtimeVars.toString());
+        return runtimeVars;
+    }
+    
+    
+    /**
+     * Resolves all runtime variables marked with percent signs (%) in the input string,
+     * including user-defined variables.
+     *
+     * <p>If no runtime variables are present, the original string is returned unchanged.</p>
+     *
+     * @param str the input string to evaluate; may or may not contain runtime variables
+     * @return a string with all detected runtime variables replaced by their resolved values,
+     *         or the original string if none are found
+     */ 
+    public String resolveAllRuntimeVars(String str) {
+        HashSet<String> keys = getAllRuntimeNameVars(str);
+        for (String key : keys) {
+            String runtimeValue = getVar(key);
+            System.out.println("Resolving variable " + key + " to " + runtimeValue);
+            str=str.replace(key, runtimeValue);
+        }
+        return str;
     }
 }

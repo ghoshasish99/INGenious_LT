@@ -307,6 +307,10 @@ public class Command {
     public boolean browserAction() {
         return "browser".equalsIgnoreCase(ObjectName);
     }
+    
+    public String resolveAllRuntimeVars(String str){
+        return Commander.resolveAllRuntimeVars(str);
+    }
 
     /**
      * ******Webservice**************
