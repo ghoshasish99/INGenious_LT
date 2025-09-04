@@ -316,4 +316,18 @@ public class GeneralOperations extends General {
         }
     }
 
+    @Action(object = ObjectType.GENERAL, desc = "store in Global Datasheet", input = InputType.YES, condition = InputType.YES)
+    public void storeInGlobalDataSheet() {
+        if (Condition != null) {
+
+            String globalDataID = Condition.split(":")[0];
+            String globalcolumnName = Condition.split(":")[1];
+            userData.putGlobalData("#"+globalDataID, globalcolumnName, Data);
+            Report.updateTestLog(Action,
+                    "Global Value: " + Data + " has been stored into " + "the Global data sheet", Status.DONE);
+        } else {
+            Report.updateTestLog(Action, "Incorrect input format", Status.DEBUG);
+            System.out.println("Incorrect input format " + Condition);
+        }
+    }
 }
