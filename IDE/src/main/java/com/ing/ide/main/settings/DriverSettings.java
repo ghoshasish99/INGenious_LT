@@ -44,6 +44,7 @@ public class DriverSettings extends javax.swing.JFrame {
     Project sProject;
     ProjectSettings settings;
     private SaveSettingsListeners saveSettingsListeners;
+    private boolean isAddingEmulator = false;
 
     /**
      * Creates new form NewJFrame
@@ -224,6 +225,10 @@ public class DriverSettings extends javax.swing.JFrame {
                 Object value = prop.get(key);
                 model.addRow(new Object[]{key, value});
             }
+        } else {
+            if(!browserName.equals("No Browser")){
+                addDefaultCapsNewEmulator();
+            }
         }
     }
 
@@ -282,13 +287,29 @@ public class DriverSettings extends javax.swing.JFrame {
     private void addNewEmulator() {
         String newEmName = browserCombo.getEditor().getItem().toString();
         if (!getTotalBrowserList().contains(newEmName)) {
+            isAddingEmulator = true;
+            saveSettings.setEnabled(true);
             settings.getEmulators().addEmulator(newEmName);
             browserCombo.addItem(newEmName);
             //dupDriverCombo.addItem(newEmName);
             browserCombo.setSelectedItem(newEmName);
+            addDefaultCapsNewEmulator();
+            isAddingEmulator = false;
         } else {
             Notification.show("Emulator/Browser [" + newEmName + "] already Present");
+            isAddingEmulator = false;
         }
+    }
+    
+    private void addDefaultCapsNewEmulator(){
+            DefaultTableModel model = (DefaultTableModel) capTable.getModel();
+            model.setRowCount(0);
+            
+            LinkedProperties properties = settings.getEmulators().defaultEmulatorCap();
+            for (Object key : properties.orderedKeys()) {
+                Object value = properties.get(key);
+                model.addRow(new Object[]{key, value});
+            }
     }
 
     private void renameEmulator() {
@@ -334,6 +355,7 @@ public class DriverSettings extends javax.swing.JFrame {
         } else if (emCapTab.getSelectedIndex() == 0) {
             saveEmulator();
         } else {
+            settings.getEmulators().save();
             saveCapabilities();
         }
     }
@@ -1018,7 +1040,7 @@ public class DriverSettings extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void browserComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_browserComboItemStateChanged
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
+        if (evt.getStateChange() == ItemEvent.SELECTED && !isAddingEmulator) {
             SwingUtilities.invokeLater(() -> {
                 checkAndLoadCapabilities();
             });
@@ -1067,6 +1089,7 @@ public class DriverSettings extends javax.swing.JFrame {
     }//GEN-LAST:event_resetSettingsActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        settings.getEmulators().reload();
         sMainFrame.reloadBrowsers();
     }//GEN-LAST:event_formWindowClosing
 
