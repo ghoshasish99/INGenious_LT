@@ -353,7 +353,6 @@ public abstract class CommandControl {
      * @return a set containing all detected runtime variable keys, including the percent signs
      */
     public static HashSet<String> getAllRuntimeNameVars(String str){
-        System.out.println("Extracting all runtime variable names from " + str);
         Pattern pattern = Pattern.compile("%(\\S+?)%");
         Matcher matcher = pattern.matcher(str);
         HashSet<String> runtimeVars = new HashSet<>();
@@ -374,7 +373,6 @@ public abstract class CommandControl {
             }
         }
         
-        System.out.println("List of extracted runtime variables :" + runtimeVars.toString());
         return runtimeVars;
     }
     
@@ -393,7 +391,6 @@ public abstract class CommandControl {
         HashSet<String> keys = getAllRuntimeNameVars(str);
         for (String key : keys) {
             String runtimeValue = getVar(key);
-            System.out.println("Resolving variable " + key + " to " + runtimeValue);
             str=str.replace(key, runtimeValue);
         }
         return str;

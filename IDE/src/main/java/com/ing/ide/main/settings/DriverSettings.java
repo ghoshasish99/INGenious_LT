@@ -546,6 +546,8 @@ public class DriverSettings extends javax.swing.JFrame {
         dbCombo = new javax.swing.JComboBox<>();
         addNewDB = new javax.swing.JButton();
         deleteDB = new javax.swing.JButton();
+        addDBPropbutton = new javax.swing.JButton();
+        deleteDBPropbutton = new javax.swing.JButton();
         dbPropTable = new XTable();
         contextCombo = new javax.swing.JComboBox<>();
         contextjLabel = new javax.swing.JLabel();
@@ -846,6 +848,33 @@ public class DriverSettings extends javax.swing.JFrame {
             }
         });
         jToolBar5.add(deleteDB);
+
+        // For adding Database Property
+        addDBPropbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ui/resources/toolbar/add.png")));
+        addDBPropbutton.setToolTipText("Add Property");
+        addDBPropbutton.setFocusable(false);
+        addDBPropbutton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addDBPropbutton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        addDBPropbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addDBPropButtonActionPerformed(evt);
+            }
+        });
+        jToolBar5.add(addDBPropbutton);
+
+        //For deleting database property
+        deleteDBPropbutton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ui/resources/toolbar/remove.png")));
+        deleteDBPropbutton.setToolTipText("Remove Property");
+        deleteDBPropbutton.setFocusable(false);
+        deleteDBPropbutton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        deleteDBPropbutton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        deleteDBPropbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                removeDBPropButtonActionPerformed(evt);
+            }
+        });
+        jToolBar5.add(deleteDBPropbutton);
 
 
         dbPropTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -1165,6 +1194,39 @@ public class DriverSettings extends javax.swing.JFrame {
             dbCombo.removeItem(dbName);
         }
     }
+    
+
+    /**
+     * Handles the action event triggered when the "Add DB Property" button is clicked.
+     * <p>
+     * This method adds a new, empty row to the {@code dbPropTable} using its table model.
+     * It is typically used to allow users to input a new database property entry.
+     *
+     * @param evt the action event triggered by the button click
+     */
+    private void addDBPropButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        DefaultTableModel model = (DefaultTableModel) dbPropTable.getModel();
+        model.addRow(new Object[]{});
+    }
+
+    
+    /**
+     * Handles the action event triggered when the "Remove DB Property" button is clicked.
+     * <p>
+     * This method removes all selected rows from the {@code dbPropTable}. It iterates
+     * through the selected rows in reverse order to avoid index shifting issues during removal.
+     *
+     * @param evt the action event triggered by the button click
+     */
+    private void removeDBPropButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        int[] rows = dbPropTable.getSelectedRows();
+        if (rows != null) {
+            DefaultTableModel model = (DefaultTableModel) dbPropTable.getModel();
+            for (int i = rows.length - 1; i >= 0; i--) {
+                model.removeRow(rows[i]);
+            }
+        }
+    }
 
     private void addNewContextActionPerformed(java.awt.event.ActionEvent evt) {
         addNewContext();
@@ -1279,6 +1341,8 @@ public class DriverSettings extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> dbCombo;
     private javax.swing.JTable dbPropTable;
     private javax.swing.JButton deleteDB;
+    private javax.swing.JButton addDBPropbutton;
+    private javax.swing.JButton deleteDBPropbutton;
     private javax.swing.JPanel databasePanel;
     private javax.swing.JTable contextPropTable;
     private javax.swing.JButton addNewContext;

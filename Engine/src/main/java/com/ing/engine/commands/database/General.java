@@ -90,13 +90,8 @@ public class General extends Command {
      *         or the original string if none are found
      */
     private String resolveAllVariables(String str) {
-        System.out.println("Resolving all variables in: " + str);
-        System.out.println("Resolving Datasheet Variables.");
         str=handleDataSheetVariables(str);
-        
-        System.out.println("Resolving runtime and user defined variables.");
         str=resolveAllRuntimeVars(str);
-        System.out.println("Output string: " + str);
         return str;
     }
 
