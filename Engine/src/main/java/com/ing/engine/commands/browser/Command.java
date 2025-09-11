@@ -212,6 +212,10 @@ public class Command {
     public void addVar(String key, String val) {
         Commander.addVar(key, val);
     }
+    
+    public String getRuntimeVar(String key) {
+        return Commander.getRuntimeVar(key);
+    }
 
     public String getVar(String key) {
         return Commander.getVar(key);

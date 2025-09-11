@@ -206,7 +206,16 @@ public abstract class CommandControl {
         runTimeVars.put(key, val);
 
     }
+    
+    public String getRuntimeVar(String key) {
 
+        if (runTimeVars.containsKey(key)) {
+             return getDynamicValue(key);
+        }
+        
+        return null;
+    }
+    
     public String getVar(String key) {
 
         System.out.println("Getting runTimeVar " + key);
