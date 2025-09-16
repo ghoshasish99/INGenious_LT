@@ -219,6 +219,10 @@ public class ProjectRunner implements TestRunner {
                         String context = args[1];
                         String property = args[2];
                         getProject().getProjectSettings().getContextSettings().getContextOptionsFor(context).put(property, value);
+                    }else if (key.startsWith("kafkaSSl.")) {
+                        String args[] = key.split("\\.");
+                        String capability = args[1];
+                       getProject().getProjectSettings().getKafkaSSLConfigurations().put(capability, value);
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(ProjectRunner.class.getName()).log(Level.SEVERE, null, ex);

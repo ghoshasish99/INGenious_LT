@@ -156,11 +156,10 @@
         </plugins>
     </build>
     <repositories>
-    <!--     <repository>
+      <repository>
             <id>confluent</id>
             <url>https://packages.confluent.io/maven/</url>
         </repository>
-    -->
     </repositories>
     <pluginRepositories/>
     <dependencies>
@@ -190,7 +189,17 @@
         
     
            
-           
+     
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka-clients.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>${kafka-avro-serializer.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.ing</groupId>
             <artifactId>ingenious-testdata-csv</artifactId>
@@ -373,22 +382,7 @@
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>${javafaker.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka-clients.version}</version>
-        </dependency>
-        <!-- <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>${kafka-avro-serializer.version}</version>
-        </dependency> -->
+        </dependency>       
         <!-- add your respective jms dependency here -->
         <dependency>
             <groupId>com.ibm.mq</groupId>

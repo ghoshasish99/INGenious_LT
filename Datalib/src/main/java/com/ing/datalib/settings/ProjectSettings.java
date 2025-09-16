@@ -24,6 +24,7 @@ public class ProjectSettings {
     private final ExecutionSettings execSettings;   
     private final DBProperties dbSettings;
     private final ContextOptions contextSettings;
+    private final KafkaSSLConfigurations SSLConfigurations;
 
     public ProjectSettings(Project sProject) {
         this.sProject = sProject;
@@ -37,6 +38,7 @@ public class ProjectSettings {
         this.rpSettings = new ReportPortalSettings(getLocation());
         this.extentSettings = new ExtentReportSettings(getLocation());
         this.contextSettings = new ContextOptions(getLocation());
+        this.SSLConfigurations = new KafkaSSLConfigurations(getLocation());
     }
 
     public void resetLocation() {
@@ -71,6 +73,10 @@ public class ProjectSettings {
     
     public ExtentReportSettings getExtentSettings(){
         return extentSettings;
+    }
+    
+    public KafkaSSLConfigurations getKafkaSSLConfigurations(){
+        return SSLConfigurations;
     }
 
     public ContextOptions getContextSettings(){
@@ -115,5 +121,6 @@ public class ProjectSettings {
         dbSettings.save();
         extentSettings.save();
         contextSettings.save();
+        SSLConfigurations.save();
     }
 }
