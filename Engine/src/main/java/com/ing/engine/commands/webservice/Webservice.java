@@ -615,6 +615,18 @@ public class Webservice extends General {
                 }
             }
 
+            Pattern pattern = Pattern.compile("%\\w+%");
+            Matcher matcher = pattern.matcher(Data);
+
+            while (matcher.find()) {
+                String variable = matcher.group();
+                if (getVar(variable) != null) {
+                    Data = Data.replaceAll(variable, getVar(variable));
+                } else {
+                    Report.updateTestLog(Action, "Variable " + variable + " not found", Status.DEBUG);
+                }
+            }
+
             if (headers.containsKey(key)) {
                 headers.get(key).add(Data);
             } else {
@@ -622,8 +634,8 @@ public class Webservice extends General {
                 toBeAdded.add(Data);
                 headers.put(key, toBeAdded);
             }
-
-            Report.updateTestLog(Action, "Header added " + Data, Status.DONE);
+            
+            Report.updateTestLog(Action, "Header added [" + Data + "]", Status.DONE);
         } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.OFF, null, ex);
             Report.updateTestLog(Action, "Error adding Header :" + "\n" + ex.getMessage(), Status.DEBUG);
