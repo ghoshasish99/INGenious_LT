@@ -294,6 +294,15 @@ public class DriverSettings extends javax.swing.JFrame {
             //dupDriverCombo.addItem(newEmName);
             browserCombo.setSelectedItem(newEmName);
             addDefaultCapsNewEmulator();
+            
+            emCapTab.setEnabledAt(0, true);
+            editEmulator.setEnabled(true);
+            deleteEmulator.setEnabled(true);
+            emCapTab.setSelectedIndex(0);
+            appiumEmulator.setSelected(true);
+            appiumConnectionString.setEnabled(true);
+            appiumConnectionString.setText("http://127.0.0.1:4723/");
+            
             isAddingEmulator = false;
         } else {
             Notification.show("Emulator/Browser [" + newEmName + "] already Present");
@@ -354,7 +363,12 @@ public class DriverSettings extends javax.swing.JFrame {
             saveCommonSettings();
         } else if (emCapTab.getSelectedIndex() == 0) {
             saveEmulator();
+            settings.getEmulators().save();
+            saveCapabilities();
         } else {
+            if(emCapTab.isEnabledAt(0)){
+                saveEmulator();
+            }
             settings.getEmulators().save();
             saveCapabilities();
         }

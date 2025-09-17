@@ -48,7 +48,7 @@
         <Property value="" ref="UiAutomation" pref="2"/>
         <Property value="" ref="id" pref="3"/>
         <Property value="" ref="Accessibility" pref="4"/>
-        <Property value="(//*[@content-desc='test-ADD TO CART'])[3] | (//*[@name=&quot;test-ADD TO CART&quot;])[1]" ref="xpath" pref="5"/>
+        <Property value="(//*[@content-desc='test-ADD TO CART'])[1] | (//*[@name=&quot;test-ADD TO CART&quot;])[1]" ref="xpath" pref="5"/>
         <Property value="" ref="css" pref="6"/>
         <Property value="" ref="name" pref="7"/>
         <Property value="" ref="tagName" pref="8"/>
