@@ -207,5 +207,8 @@ public class WebDriverCreation {
         }
         driver = null;
     }
-
+  public boolean isLambdaTestExecutionPlatform() {
+        String url = Control.getCurrentProject().getProjectSettings().getEmulators().getEmulator(runContext.BrowserName).getRemoteUrl();
+        return url.endsWith("hub.lambdatest.com/wd/hub");
+    }
 }
