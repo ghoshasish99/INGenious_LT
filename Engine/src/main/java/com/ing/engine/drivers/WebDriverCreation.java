@@ -38,8 +38,8 @@ public class WebDriverCreation {
             System.out.println("\n🚀 Launching Driver \n");
             driver = WebDriverFactory.create(context, Control.getCurrentProject().getProjectSettings());
         } catch (Exception ex) {
-            throw new AppiumDriverException("[Appium Driver Exception]. Please verify if the capabilities are passed correctly. Please visit  'https://appium.io/docs/en/2.0/guides/caps/' for more details. \n" +ex.getMessage());
-                   
+            throw new AppiumDriverException("[Appium Driver Exception]. Please verify if the capabilities are passed correctly. Please visit  'https://appium.io/docs/en/2.0/guides/caps/' for more details. \n" + ex.getMessage());
+
         }
     }
 
@@ -207,8 +207,13 @@ public class WebDriverCreation {
         }
         driver = null;
     }
-  public boolean isLambdaTestExecutionPlatform() {
-        String url = Control.getCurrentProject().getProjectSettings().getEmulators().getEmulator(runContext.BrowserName).getRemoteUrl();
-        return url.endsWith("hub.lambdatest.com/wd/hub");
+
+    public boolean isLambdaTestExecutionPlatform() {
+        if (!runContext.BrowserName.equalsIgnoreCase("No Browser")) {
+            String url = Control.getCurrentProject().getProjectSettings().getEmulators().getEmulator(runContext.BrowserName).getRemoteUrl();
+            return url.endsWith("hub.lambdatest.com/wd/hub");
+        } else {
+            return false;
+        }
     }
 }
