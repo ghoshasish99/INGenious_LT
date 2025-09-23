@@ -151,6 +151,15 @@ public class TestCaseAutoSuggest {
         }
         return newList;
     }
+    
+    public List<String> getAPIAliasList() {
+        List<String> values = sProject.getProjectSettings().getDriverSettings().getAPIList();
+        List<String> newList = new ArrayList<>();
+        for (String string : values) {
+            newList.add("#"+string);
+        }
+        return newList;
+    }
 
 
     private void startEditing(final AutoSuggest suggest) {
@@ -252,7 +261,14 @@ public class TestCaseAutoSuggest {
 
     class ConditionAutoSuggest extends AutoSuggest {
         private List<String> getConditionBasedOnText(String value) {
-            return getContextAliasList();
+            String objectName = Objects.toString(table.getValueAt(
+                    table.getSelectedRow(), ObjectName.getIndex()), "");
+            if ("Webservice".equals(objectName)){
+                return getAPIAliasList();
+            } else {
+                return getContextAliasList();
+            }
+            
         }
  
         @Override

@@ -5,6 +5,7 @@ import com.ing.datalib.or.common.ObjectGroup;
 import com.ing.datalib.or.image.ImageORObject;
 import com.ing.datalib.settings.DriverSettings;
 import com.ing.datalib.util.data.LinkedProperties;
+import com.ing.datalib.settings.DriverProperties;
 import com.ing.engine.drivers.AutomationObject;
 import com.ing.engine.drivers.AutomationObject.FindType;
 import com.ing.engine.drivers.PlaywrightDriverCreation;
@@ -302,7 +303,8 @@ public abstract class CommandControl {
     
     public Map<String, String> getProxySettings() {
         Map<String, String> systemSettings = new HashMap<>();
-        DriverSettings settings = Control.getCurrentProject().getProjectSettings().getDriverSettings();
+        // DriverSettings settings = Control.getCurrentProject().getProjectSettings().getDriverSettings();
+        DriverProperties settings = Control.getCurrentProject().getProjectSettings().getDriverSettings();
         systemSettings.put("proxySet", "true");            
         systemSettings.put("http.proxyHost", settings.getProperty("proxyHost"));            
         systemSettings.put("http.proxyPort", settings.getProperty("proxyPort"));

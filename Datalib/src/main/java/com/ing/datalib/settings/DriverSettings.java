@@ -1,6 +1,10 @@
 
 package com.ing.datalib.settings;
 
+//# Deprecated as of Sept 2025
+//# Reason: Replaced by new DriverProperties in `Datalib module`
+//# Retained for reference in case rollback is needed
+//# Dev : Renz
 public class DriverSettings extends AbstractPropSettings {
 
     private static String geckoDriverPath, chromeDriverPath;

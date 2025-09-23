@@ -15,7 +15,8 @@ public class ProjectSettings {
 
     private final UserDefinedSettings userDefinedSettings;
 
-    private final DriverSettings driverSettings;
+    private final DriverProperties driverSettings;
+    // private final DriverSettings driverSettings;
     private final Capabilities capabilities;
     private final Emulators emulators;
     private final TestMgmtModule testMgmtModule;
@@ -29,7 +30,8 @@ public class ProjectSettings {
     public ProjectSettings(Project sProject) {
         this.sProject = sProject;
         this.userDefinedSettings = new UserDefinedSettings(getLocation());
-        this.driverSettings = new DriverSettings(getLocation());
+        // this.driverSettings = new DriverSettings(getLocation());
+        this.driverSettings = new DriverProperties(getLocation());
         this.capabilities = new Capabilities(getLocation());
         this.emulators = new Emulators(getLocation());
         this.testMgmtModule = new TestMgmtModule(getLocation());
@@ -43,6 +45,7 @@ public class ProjectSettings {
 
     public void resetLocation() {
         userDefinedSettings.setLocation(getLocation());
+        // driverSettings.setLocation(getLocation());
         driverSettings.setLocation(getLocation());
         capabilities.setLocation(getLocation());
         emulators.setLocation(getLocation());
@@ -83,7 +86,7 @@ public class ProjectSettings {
         return contextSettings;
     }
     
-    public DriverSettings getDriverSettings() {
+    public DriverProperties getDriverSettings() {
         return driverSettings;
     }
 

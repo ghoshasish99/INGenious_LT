@@ -1,5 +1,6 @@
 package com.ing.engine.commands.webservice;
 
+import com.ing.datalib.settings.DriverProperties;
 import com.ing.engine.commands.browser.General;
 import com.ing.engine.constants.FilePath;
 import com.ing.engine.core.CommandControl;
@@ -421,6 +422,17 @@ public class Webservice extends General {
     @Action(object = ObjectType.WEBSERVICE, desc = "Set End Point ", input = InputType.YES, condition = InputType.OPTIONAL)
     public void setEndPoint() {
         try {
+            String apiConfigName = Condition;
+            DriverProperties driverProperties = Control.getCurrentProject().getProjectSettings().getDriverSettings();
+            if (apiConfigName.startsWith("#")) {
+                apiConfigName = apiConfigName.replace("#", "");
+            } else {
+                apiConfigName = ""; //This means that the Condtion is not an API Config Alias
+            }
+
+            String configToLoad = driverProperties.doesAPIconfigExist(apiConfigName) ? apiConfigName : "default";
+            driverProperties.setCurrLoadedAPIConfig(configToLoad);
+            
             String resource = handlePayloadorEndpoint(Data);
             endPoints.put(key, resource);
             httpAgentCheck();
@@ -709,13 +721,13 @@ public class Webservice extends General {
             Report.updateTestLog(Action, "Error closing connection :" + "\n" + ex.getMessage(), Status.DEBUG);
         }
     }
-
+    
     private ProxySelector getProxyDetails() {
         if (Control.getCurrentProject().getProjectSettings().getDriverSettings().useProxy()) {
             String proxyhost = Control.getCurrentProject().getProjectSettings().getDriverSettings()
-                    .getProperty("proxyHost");
+                    .getProxyHost().replaceFirst("^(http://|https://)", "");
             String proxyport = Control.getCurrentProject().getProjectSettings().getDriverSettings()
-                    .getProperty("proxyPort");
+                    .getProxyPort();
             ProxySelector proxySelector = ProxySelector.of(new InetSocketAddress(proxyhost, Integer.parseInt(proxyport)));
             return proxySelector;
         } else {
